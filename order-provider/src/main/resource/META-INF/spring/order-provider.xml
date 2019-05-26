@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans        http://www.springframework.org/schema/beans/spring-beans.xsd        http://code.alibabatech.com/schema/dubbo        http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!--当前项目在整个分布式架构里面的唯一名称，计算依赖关系的标签-->
+    <dubbo:application name="order-provider" />
+
+    <!--<dubbo:monitor protocol="registry"/>-->
+
+    <!--dubbo这个服务所要暴露的服务地址所对应的注册中心-->
+    <dubbo:registry id = "orderServiceRegistry" protocol="zookeeper" address="127.0.0.1:2181"  group="/dubbo/huangjia/orderService"/>
+
+    <!--当前服务发布所依赖的协议；webserovice、Thrift、Hessain、http-->
+    <dubbo:protocol name="dubbo" port="20880"/>
+
+    <!--服务发布的配置，需要暴露的服务接口
+    当一个接口有多种实现时，可以用group区分,
+    当一个接口的实现，出现不兼容升级时，可以用版本号过渡，版本号不同的服务相互间不引用
+    -->
+    <dubbo:service
+            interface="com.huangjia.dubbo.service.OrderServices"
+            ref="orderServices"
+            version="1.0.0"
+            registry="orderServiceRegistry"
+            timeout="800"
+    />
+
+    <!--Bean bean定义-->
+    <bean id="orderServices" class="com.huangjia.dubbo.service.impl.OrderServiceImpl"/>
+
+</beans>
